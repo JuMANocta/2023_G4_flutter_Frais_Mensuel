@@ -9,16 +9,15 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
 
   ExpenseBloc({required this.expenseRepository}) : super(ExpenseLoading());
 
-  @override
-  Stream<ExpenseState> mapEventToState(ExpenseEvent) async*{
+  Stream<ExpenseState> mapEventToState(expenseEvent) async*{
     if (ExpenseEvent is ExpenseLoaded) {
       yield* _mapExpenseLoadedToState();
     } else if (ExpenseEvent is ExpenseAdded) {
-      yield* _mapExpenseAddedToState(ExpenseEvent);
+      yield* _mapExpenseAddedToState(expenseEvent);
     } else if (ExpenseEvent is ExpenseUpdated) {
-      yield* _mapExpenseUpdatedToState(ExpenseEvent);
+      yield* _mapExpenseUpdatedToState(expenseEvent);
     } else if (ExpenseEvent is ExpenseDeleted) {
-      yield* _mapExpenseDeletedToState(ExpenseEvent);
+      yield* _mapExpenseDeletedToState(expenseEvent);
     }
   }
 

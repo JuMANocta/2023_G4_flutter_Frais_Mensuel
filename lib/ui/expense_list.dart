@@ -3,9 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:g4flutterfraismensuel/bloc/expense_bloc.dart';
 import 'package:g4flutterfraismensuel/bloc/expense_event.dart';
 import 'package:g4flutterfraismensuel/bloc/expense_state.dart';
-import 'package:g4flutterfraismensuel/models/expense.dart';
 
 class ExpenseList extends StatelessWidget {
+  const ExpenseList({super.key});
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ExpenseBloc, ExpenseState>(

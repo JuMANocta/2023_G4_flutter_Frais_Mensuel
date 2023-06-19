@@ -26,10 +26,15 @@ class DatabaseProvider {
   }
 
   _initDatabase() async {
-    var documentDirectory = await getApplicationDocumentsDirectory();
-    String path = documentDirectory.path + _databaseName;
-    return await openDatabase(path,
-        version: _databaseVersion, onCreate: _onCreate);
+    try {
+      var documentDirectory = await getApplicationDocumentsDirectory();
+      String path = documentDirectory.path + _databaseName;
+      return await openDatabase(path,
+          version: _databaseVersion, onCreate: _onCreate);
+    } catch (e) {
+      print('Erreur lors de l\'ouverture de la base de données : $e');
+      return null;
+    }
   }
 
   Future _onCreate(Database db, int version) async {

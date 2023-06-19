@@ -9,8 +9,12 @@ import 'ui/home_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   DatabaseProvider databaseProvider = DatabaseProvider.instance;
-  Database? database = await databaseProvider.database;
-  runApp(MyApp(database: database!));
+  try {
+    Database? database = await databaseProvider.database;
+    runApp(MyApp(database: database!));
+  } catch (e) {
+    print('Erreur lors de l\'initialisation de la base de données : $e');
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -20,8 +24,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ExpenseBloc(
-          expenseRepository: ExpenseRepository(database: database)),
+      create: (context) =>
+          ExpenseBloc(expenseRepository: ExpenseRepository(database: database)),
       child: MaterialApp(
         title: 'Gestion des frais mensuels',
         theme: ThemeData(

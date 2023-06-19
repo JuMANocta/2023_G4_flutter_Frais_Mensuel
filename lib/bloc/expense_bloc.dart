@@ -50,5 +50,14 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     }
   }
 
-  
+  Stream<ExpenseState> _mapExpenseDeletedToState(ExpenseDeleted event) async*{
+    if(state is ExpensesLoadSuccess){
+      final updatedExpenses = (state as ExpensesLoadSuccess)
+        .expenses
+        .where((expense) => expense.id != event.id)
+        .toList();
+      yield ExpensesLoadSuccess(updatedExpenses);
+      await expenseRepository.deleteExpense(event.id);
+    }
+  }
 }

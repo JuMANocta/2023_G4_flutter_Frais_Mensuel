@@ -7,11 +7,13 @@ import 'package:g4flutterfraismensuel/ui/add_edit_screen.dart';
 import 'package:g4flutterfraismensuel/ui/expense_list.dart';
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Gestion des frais mensuels'),
+        title: const Text('Gestion des frais mensuels'),
       ),
       body: ExpenseList(),
       floatingActionButton: FloatingActionButton(
@@ -36,7 +38,7 @@ class HomeScreen extends StatelessWidget {
             }),
           );
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
 class DatabaseProvider {
   static const _databaseName = "expenses.db";
@@ -29,7 +30,7 @@ class DatabaseProvider {
     try {
       print('base init');
       var documentDirectory = await getApplicationDocumentsDirectory();
-      String path = documentDirectory.path + _databaseName;
+      String path = join(documentDirectory.path, _databaseName);
       return await openDatabase(path,
           version: _databaseVersion, onCreate: _onCreate);
     } catch (e) {

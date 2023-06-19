@@ -6,6 +6,8 @@ import 'package:g4flutterfraismensuel/bloc/expense_state.dart';
 import 'package:g4flutterfraismensuel/ui/add_edit_screen.dart';
 
 class ExpenseList extends StatelessWidget {
+  const ExpenseList({super.key});
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ExpenseBloc, ExpenseState>(

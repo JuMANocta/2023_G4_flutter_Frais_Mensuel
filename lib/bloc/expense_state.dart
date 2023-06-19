@@ -10,9 +10,9 @@ abstract class ExpenseState extends Equatable {
 
 class ExpenseLoading extends ExpenseState {}
 
-class ExpenseLoaded extends ExpenseState {
+class ExpensesLoadSuccess extends ExpenseState {
   final List<Expense> expenses;
-  const ExpenseLoaded([this.expenses = const []]);
+  const ExpensesLoadSuccess([this.expenses = const []]);
   @override
   List<Object> get props => [expenses];
   @override

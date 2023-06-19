@@ -27,6 +27,7 @@ class DatabaseProvider {
 
   _initDatabase() async {
     try {
+      print('base init');
       var documentDirectory = await getApplicationDocumentsDirectory();
       String path = documentDirectory.path + _databaseName;
       return await openDatabase(path,

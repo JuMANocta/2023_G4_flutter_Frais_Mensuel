@@ -3,10 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:g4flutterfraismensuel/bloc/expense_bloc.dart';
 import 'package:g4flutterfraismensuel/bloc/expense_event.dart';
 import 'package:g4flutterfraismensuel/bloc/expense_state.dart';
+import 'package:g4flutterfraismensuel/ui/add_edit_screen.dart';
 
 class ExpenseList extends StatelessWidget {
-  const ExpenseList({super.key});
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ExpenseBloc, ExpenseState>(
@@ -25,15 +24,26 @@ class ExpenseList extends StatelessWidget {
                 trailing: IconButton(
                   icon: const Icon(Icons.delete),
                   onPressed: () {
-                    BlocProvider.of<ExpenseBloc>(context)
-                        .add(ExpenseDeleted(id: expense.id));
+                    BlocProvider.of<ExpenseBloc>(context).add(ExpenseDeleted(id: expense.id!));
                   },
                 ),
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) {
-                      return const CircularProgressIndicator();
-                      // TODO ajout la page edit
+                      return AddEditScreen(
+                        onSave: (description, amount) {
+                          BlocProvider.of<ExpenseBloc>(context).add(
+                            ExpenseUpdated(
+                              expense: expense.copyWith(
+                                description: description,
+                                amount: amount,
+                              ),
+                            ),
+                          );
+                        },
+                        isEditing: true,
+                        expense: expense,
+                      );
                     }),
                   );
                 },

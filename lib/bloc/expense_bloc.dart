@@ -7,55 +7,48 @@ import 'package:g4flutterfraismensuel/repository/expense_repository.dart';
 class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
   final ExpenseRepository expenseRepository;
 
-  ExpenseBloc({required this.expenseRepository}) : super(ExpenseLoading());
-
-  Stream<ExpenseState> mapEventToState(expenseEvent) async*{
-    if (ExpenseEvent is ExpenseLoaded) {
-      yield* _mapExpenseLoadedToState();
-    } else if (ExpenseEvent is ExpenseAdded) {
-      yield* _mapExpenseAddedToState(expenseEvent);
-    } else if (ExpenseEvent is ExpenseUpdated) {
-      yield* _mapExpenseUpdatedToState(expenseEvent);
-    } else if (ExpenseEvent is ExpenseDeleted) {
-      yield* _mapExpenseDeletedToState(expenseEvent);
-    }
+  ExpenseBloc({required this.expenseRepository}) : super(ExpenseLoading()) {
+    on<ExpenseLoaded>(_onExpenseLoaded);
+    on<ExpenseAdded>(_onExpenseAdded);
+    on<ExpenseUpdated>(_onExpenseUpdated);
+    on<ExpenseDeleted>(_onExpenseDeleted);
   }
 
-  Stream<ExpenseState> _mapExpenseLoadedToState() async*{
+  Future<void> _onExpenseLoaded(ExpenseLoaded event, Emitter<ExpenseState> emit) async {
     try {
       final expenses = await expenseRepository.getExpenses();
-      yield ExpensesLoadSuccess(expenses);
+      emit(ExpensesLoadSuccess(expenses));
     } catch (_) {
-      yield const ExpenseOperationFailure(message: 'Could not load expenses');
+      emit(const ExpenseOperationFailure(message: 'Could not load expenses'));
     }
   }
 
-  Stream<ExpenseState> _mapExpenseAddedToState(ExpenseAdded event) async*{
+  Future<void> _onExpenseAdded(ExpenseAdded event, Emitter<ExpenseState> emit) async {
     if (state is ExpensesLoadSuccess) {
       final List<Expense> updatedExpenses = List.from((state as ExpensesLoadSuccess).expenses)..add(event.expense);
-      yield ExpensesLoadSuccess(updatedExpenses);
+      emit(ExpensesLoadSuccess(updatedExpenses));
       await expenseRepository.addExpense(event.expense);
     }
   }
 
-  Stream<ExpenseState> _mapExpenseUpdatedToState(ExpenseUpdated event) async*{
+  Future<void> _onExpenseUpdated(ExpenseUpdated event, Emitter<ExpenseState> emit) async {
     if(state is ExpensesLoadSuccess){
       final List<Expense> updatedExpenses = (state as ExpensesLoadSuccess)
         .expenses
         .map((expense)=> expense.id == event.expense.id ? event.expense : expense)
         .toList();
-      yield ExpensesLoadSuccess(updatedExpenses);
+      emit(ExpensesLoadSuccess(updatedExpenses));
       await expenseRepository.updateExpense(event.expense);
     }
   }
 
-  Stream<ExpenseState> _mapExpenseDeletedToState(ExpenseDeleted event) async*{
+  Future<void> _onExpenseDeleted(ExpenseDeleted event, Emitter<ExpenseState> emit) async {
     if(state is ExpensesLoadSuccess){
       final updatedExpenses = (state as ExpensesLoadSuccess)
         .expenses
         .where((expense) => expense.id != event.id)
         .toList();
-      yield ExpensesLoadSuccess(updatedExpenses);
+      emit(ExpensesLoadSuccess(updatedExpenses));
       await expenseRepository.deleteExpense(event.id);
     }
   }

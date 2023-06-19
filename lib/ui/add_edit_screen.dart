@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:g4flutterfraismensuel/bloc/expense_bloc.dart';
+import 'package:g4flutterfraismensuel/bloc/expense_event.dart';
 import 'package:g4flutterfraismensuel/models/expense.dart';
-
 
 typedef OnSaveCallback = Function(String description, double amount);
 
@@ -9,7 +11,7 @@ class AddEditScreen extends StatefulWidget {
   final OnSaveCallback onSave;
   final Expense? expense;
 
-  AddEditScreen({required this.onSave, required this.isEditing, this.expense});
+  const AddEditScreen({super.key, required this.onSave, required this.isEditing, this.expense});
 
   @override
   _AddEditScreenState createState() => _AddEditScreenState();
@@ -30,14 +32,14 @@ class _AddEditScreenState extends State<AddEditScreen> {
         title: Text(isEditing ? 'Modifier un frais' : 'Ajouter un frais'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
               TextFormField(
                 initialValue: isEditing ? widget.expense?.description : '',
-                decoration: InputDecoration(labelText: 'Description'),
+                decoration: const InputDecoration(labelText: 'Description'),
                 validator: (val) {
                   return val!.trim().isEmpty ? 'Veuillez entrer une description' : null;
                 },
@@ -45,8 +47,8 @@ class _AddEditScreenState extends State<AddEditScreen> {
               ),
               TextFormField(
                 initialValue: isEditing ? '${widget.expense?.amount}' : '',
-                decoration: InputDecoration(labelText: 'Montant'),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(labelText: 'Montant'),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 validator: (val) {
                   return val!.trim().isEmpty ? 'Veuillez entrer un montant' : null;
                 },
@@ -60,11 +62,16 @@ class _AddEditScreenState extends State<AddEditScreen> {
         onPressed: () {
           if (_formKey.currentState!.validate()) {
             _formKey.currentState!.save();
-            widget.onSave(_description!, _amount!);
+            final expense = Expense(
+              description: _description!,
+              amount: _amount!,
+              date: DateTime.now(),
+            );
+            BlocProvider.of<ExpenseBloc>(context).add(ExpenseAdded(expense: expense));
             Navigator.pop(context);
           }
         },
-        child: Icon(Icons.save),
+        child: const Icon(Icons.save),
       ),
     );
   }

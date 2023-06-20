@@ -5,7 +5,7 @@ class Expense {
   final DateTime date;
 
   Expense({
-    this.id,
+    required this.id,
     required this.description,
     required this.amount,
     required this.date,

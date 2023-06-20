@@ -15,7 +15,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Gestion des frais mensuels'),
       ),
-      body: ExpenseList(),
+      body: const ExpenseList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).push(

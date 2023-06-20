@@ -12,42 +12,53 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     on<ExpenseAdded>(_onExpenseAdded);
     on<ExpenseUpdated>(_onExpenseUpdated);
     on<ExpenseDeleted>(_onExpenseDeleted);
+
+    add(ExpenseLoaded());
   }
 
-  Future<void> _onExpenseLoaded(ExpenseLoaded event, Emitter<ExpenseState> emit) async {
+  Future<void> _onExpenseLoaded(
+      ExpenseLoaded event, Emitter<ExpenseState> emit) async {
     try {
+      print('ExpenseLoaded');
       final expenses = await expenseRepository.getExpenses();
+      print('ExpenseLoaded->ExpensesLoadSuccess');
       emit(ExpensesLoadSuccess(expenses));
-    } catch (_) {
+    } catch (error) {
       emit(const ExpenseOperationFailure(message: 'Could not load expenses'));
     }
   }
 
-  Future<void> _onExpenseAdded(ExpenseAdded event, Emitter<ExpenseState> emit) async {
+  Future<void> _onExpenseAdded(
+      ExpenseAdded event, Emitter<ExpenseState> emit) async {
     if (state is ExpensesLoadSuccess) {
-      final List<Expense> updatedExpenses = List.from((state as ExpensesLoadSuccess).expenses)..add(event.expense);
+      final List<Expense> updatedExpenses =
+          List.from((state as ExpensesLoadSuccess).expenses)
+            ..add(event.expense);
       emit(ExpensesLoadSuccess(updatedExpenses));
       await expenseRepository.addExpense(event.expense);
     }
   }
 
-  Future<void> _onExpenseUpdated(ExpenseUpdated event, Emitter<ExpenseState> emit) async {
-    if(state is ExpensesLoadSuccess){
+  Future<void> _onExpenseUpdated(
+      ExpenseUpdated event, Emitter<ExpenseState> emit) async {
+    if (state is ExpensesLoadSuccess) {
       final List<Expense> updatedExpenses = (state as ExpensesLoadSuccess)
-        .expenses
-        .map((expense)=> expense.id == event.expense.id ? event.expense : expense)
-        .toList();
+          .expenses
+          .map((expense) =>
+              expense.id == event.expense.id ? event.expense : expense)
+          .toList();
       emit(ExpensesLoadSuccess(updatedExpenses));
       await expenseRepository.updateExpense(event.expense);
     }
   }
 
-  Future<void> _onExpenseDeleted(ExpenseDeleted event, Emitter<ExpenseState> emit) async {
-    if(state is ExpensesLoadSuccess){
+  Future<void> _onExpenseDeleted(
+      ExpenseDeleted event, Emitter<ExpenseState> emit) async {
+    if (state is ExpensesLoadSuccess) {
       final updatedExpenses = (state as ExpensesLoadSuccess)
-        .expenses
-        .where((expense) => expense.id != event.id)
-        .toList();
+          .expenses
+          .where((expense) => expense.id != event.id)
+          .toList();
       emit(ExpensesLoadSuccess(updatedExpenses));
       await expenseRepository.deleteExpense(event.id);
     }

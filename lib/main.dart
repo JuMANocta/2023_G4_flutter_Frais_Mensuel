@@ -27,7 +27,6 @@ class MyApp extends StatelessWidget {
       create: (context) =>
           ExpenseBloc(expenseRepository: ExpenseRepository(database: database)),
       child: MaterialApp(
-        title: 'Gestion des frais mensuels',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),

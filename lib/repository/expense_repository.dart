@@ -6,20 +6,20 @@ class ExpenseRepository {
 
   ExpenseRepository({required this.database});
 
-  Future<List<Expense>> getExpenses() async{
+  Future<List<Expense>> getExpenses() async {
     final List<Map<String, dynamic>> maps = await database.query('expenses');
     return List.generate(maps.length, (i) => Expense.fromMap(maps[i]));
   }
 
-  Future<int> addExpense(Expense expense) async{
+  Future<int> addExpense(Expense expense) async {
     return await database.insert(
       'expenses',
       expense.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+    );
   }
 
-  Future<void> updateExpense(Expense expense) async{
+  Future<void> updateExpense(Expense expense) async {
     await database.update(
       'expenses',
       expense.toMap(),
@@ -28,11 +28,15 @@ class ExpenseRepository {
     );
   }
 
-  Future<void> deleteExpense(int id) async{
+  Future<void> deleteExpense(int id) async {
     await database.delete(
       'expenses',
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  Future<void> deleteAllExpenses() async {
+    await database.delete('expenses');
   }
 }

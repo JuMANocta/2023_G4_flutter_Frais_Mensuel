@@ -4,6 +4,7 @@ import 'package:g4flutterfraismensuel/bloc/expense_bloc.dart';
 import 'package:g4flutterfraismensuel/bloc/expense_event.dart';
 import 'package:g4flutterfraismensuel/models/expense.dart';
 import 'package:g4flutterfraismensuel/ui/add_edit_screen.dart';
+import 'package:g4flutterfraismensuel/ui/expense_diagramme.dart';
 import 'package:g4flutterfraismensuel/ui/expense_list.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -15,6 +16,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Gestion des frais mensuels'),
       ),
+      //body: const ExpenseChart(),
       body: const ExpenseList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

@@ -11,6 +11,8 @@ Future<void> main() async {
   DatabaseProvider databaseProvider = DatabaseProvider.instance;
   try {
     Database? database = await databaseProvider.database;
+    //ExpenseRepository(database: database!).deleteAllExpenses();
+    //generateExpense(database);
     runApp(MyApp(database: database!));
   } catch (e) {
     print('Erreur lors de l\'initialisation de la base de données : $e');

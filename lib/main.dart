@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:g4flutterfraismensuel/bloc/expense_bloc.dart';
 import 'package:g4flutterfraismensuel/models/database.dart';
 import 'package:g4flutterfraismensuel/repository/expense_repository.dart';
+import 'package:g4flutterfraismensuel/repository/fake_don.dart';
 import 'package:sqflite/sqflite.dart';
 import 'ui/home_screen.dart';
 
@@ -11,8 +12,8 @@ Future<void> main() async {
   DatabaseProvider databaseProvider = DatabaseProvider.instance;
   try {
     Database? database = await databaseProvider.database;
-    //ExpenseRepository(database: database!).deleteAllExpenses();
-    //generateExpense(database);
+    // ExpenseRepository(database: database!).deleteAllExpenses();
+    // generateExpense(database);
     runApp(MyApp(database: database!));
   } catch (e) {
     print('Erreur lors de l\'initialisation de la base de données : $e');

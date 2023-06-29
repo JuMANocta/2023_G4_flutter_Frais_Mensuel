@@ -8,8 +8,15 @@ import 'package:g4flutterfraismensuel/bloc/expense_state.dart';
 import 'package:g4flutterfraismensuel/models/expenses_duration.dart';
 import 'package:intl/intl.dart';
 
-class ExpenseChart extends StatelessWidget {
+class ExpenseChart extends StatefulWidget {
   const ExpenseChart({Key? key}) : super(key: key);
+
+  @override
+  State<ExpenseChart> createState() => _ExpenseChartState();
+}
+
+class _ExpenseChartState extends State<ExpenseChart> {
+  Map<String, double> sortedExpenses = {};
 
   @override
   Widget build(BuildContext context) {
@@ -17,47 +24,34 @@ class ExpenseChart extends StatelessWidget {
       builder: (context, state) {
         if (state is ExpensesLoadSuccess) {
           var expenses = ExpenseModelDuration(state.expenses);
-          for (var expense in expenses.filterExpenses(const Duration(days: 7))) {
-            print('Description: ${expense.description}, Amount: ${expense.amount}, Date: ${expense.date}');
-          }
-          //print(expenses.filterExpenses(const Duration(days: 30)));
-          //print(expenses.filterExpenses(const Duration(days: 365)));
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(height: 20),
-                const Text('Weekly expenses'),
-                const SizedBox(height: 20),
-                SizedBox(
-                  height: 200,
-                  child: BarChart(BarChartData(
-                    barGroups: getBarChartData(
-                        expenses.filterExpenses(const Duration(days: 7))),
-                  )),
+          var filteredExpenses =
+              expenses.filterExpenses(const Duration(days: 365));
+          var chartData = getBarChartData(filteredExpenses);
+          return Center(
+              child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: BarChart(
+                  BarChartData(
+                    barGroups: chartData,
+                    borderData: FlBorderData(
+                        border: const Border(
+                            bottom: BorderSide(), left: BorderSide())),
+                    gridData: FlGridData(show: false),
+                    titlesData: FlTitlesData(
+                      bottomTitles: AxisTitles(sideTitles: _bottomTitles),
+                      leftTitles:
+                          AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      topTitles:
+                          AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      rightTitles:
+                          AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    ),
+                  ),
                 ),
-                // const SizedBox(height: 20),
-                // const Text('Monthly expenses'),
-                // const SizedBox(height: 20),
-                // SizedBox(
-                //   height: 200,
-                //   child: BarChart(BarChartData(
-                //     barGroups: getBarChartData(
-                //         expenses.filterExpenses(const Duration(days: 30))),
-                //   )),
-                // ),
-                // const SizedBox(height: 20),
-                // const Text('Annual expenses'),
-                // const SizedBox(height: 20),
-                // SizedBox(
-                //   height: 200,
-                //   child: BarChart(BarChartData(
-                //     barGroups: getBarChartData(
-                //         expenses.filterExpenses(const Duration(days: 365))),
-                //   )),
-                // ),
-              ],
-            ),
+              ),
+            )
           );
         } else if (state is ExpenseLoading) {
           return const Center(child: CircularProgressIndicator());
@@ -69,21 +63,21 @@ class ExpenseChart extends StatelessWidget {
   }
 
   List<BarChartGroupData> getBarChartData(List<Expense> expenses) {
-    // Group expenses by day and sum amounts
+    // Group expenses by month and sum amounts
     Map<String, double> groupedExpenses = {};
     for (Expense expense in expenses) {
-      String day = DateFormat('yyyy-MM-dd').format(expense.date);
-      groupedExpenses.update(day, (value) => value + expense.amount,
+      String month = DateFormat('yyyy-MM').format(expense.date);
+      groupedExpenses.update(month, (value) => value + expense.amount,
           ifAbsent: () => expense.amount);
     }
 
-    // Sort map by keys (dates)
-    var sortedExpenses = SplayTreeMap.from(groupedExpenses);
+    // Sort map by keys (months)
+    sortedExpenses = SplayTreeMap.from(groupedExpenses);
 
     // Generate chart data
     final List<BarChartGroupData> chartData = [];
     int barIndex = 0;
-    sortedExpenses.forEach((date, totalAmount) {
+    sortedExpenses.forEach((month, totalAmount) {
       chartData.add(
         BarChartGroupData(
           x: barIndex,
@@ -98,9 +92,23 @@ class ExpenseChart extends StatelessWidget {
       barIndex++;
     });
 
-    // Take last 7 days
-    return chartData.length > 7
-        ? chartData.sublist(chartData.length - 7)
+    // Take last 12 months
+    return chartData.length > 12
+        ? chartData.sublist(chartData.length - 12)
         : chartData;
   }
+
+  SideTitles get _bottomTitles => SideTitles(
+        showTitles: true,
+        getTitlesWidget: (value, meta) {
+          if (value >= 0 && value < sortedExpenses.keys.length) {
+            var dateString = sortedExpenses.keys.elementAt(value.toInt());
+            var date = DateTime(int.parse(dateString.split('-')[0]),
+                int.parse(dateString.split('-')[1]), 1);
+            return Text(DateFormat('MMM').format(date));
+          } else {
+            return const Text('');
+          }
+        },
+      );
 }

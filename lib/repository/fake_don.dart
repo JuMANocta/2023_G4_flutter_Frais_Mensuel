@@ -2,27 +2,38 @@ import 'dart:math';
 import 'package:g4flutterfraismensuel/models/expense.dart';
 import 'package:g4flutterfraismensuel/repository/expense_repository.dart';
 
-Future<void> generateExpense(database) async{
+Future<void> generateExpense(database) async {
   final Random random = Random();
+  final DateTime now = DateTime.now();
 
-  for(int month = 1; month <= 12; month++){
+  for (int month = 1; month <= 12; month++) {
     // générer entre 5 et 10 dépenses par mois
     final int nbExpense = random.nextInt(5) + 5;
-    for(int i = 0; i < nbExpense; i++){
+    for (int i = 0; i < nbExpense; i++) {
       // générer une date aléatoire dans le mois
       final int day = random.nextInt(28) + 1;
       // générer un mois aléatoire
-      final int month = random.nextInt(12) + 1;
-      // générer une année aléatoire entre 2021 et 2023
-      final int year = random.nextInt(3) + 2021;
-      // final int year = 2022;
-      // générer une heure minutes et seconde aléatoire
+      int generatedMonth = random.nextInt(12) + 1;
+
+      // générer une année aléatoire entre 2021 et l'année actuelle
+      final int year = random.nextInt(now.year - 2020 + 1) + 2020;
+
+      // Si l'année générée est l'année actuelle, s'assurer que le mois généré n'est pas supérieur au mois actuel
+      if (year == now.year) {
+        while (generatedMonth > now.month) {
+          generatedMonth = random.nextInt(12) + 1;
+        }
+      }
+
+      // générer une heure, minute et seconde aléatoires
       final int hour = random.nextInt(24);
       final int minute = random.nextInt(60);
       final int second = random.nextInt(60);
-      // générer une date avec l'heure minutes seconde à partir des valeurs aléatoires
-      final DateTime date = DateTime(year, month, day, hour, minute, second);
-      // générer un id en time stamp selon la date trouvé
+
+      // générer une date avec l'heure, minute et seconde à partir des valeurs aléatoires
+      final DateTime date = DateTime(year, generatedMonth, day, hour, minute, second);
+
+      // générer un id en timestamp selon la date trouvée
       final int id = date.millisecondsSinceEpoch;
 
       // générer une description aléatoire selon un tableau de description
@@ -41,6 +52,7 @@ Future<void> generateExpense(database) async{
         'Frais de bliblibli',
         'Frais de blublublu',
       ];
+
       // générer un montant aléatoire entre 1 et 100
       final int amount = random.nextInt(100) + 1;
 
@@ -51,8 +63,9 @@ Future<void> generateExpense(database) async{
         amount: amount.toDouble(),
         date: date,
       );
-      // insérer la dépence créer dans la base de données
-      await ExpenseRepository(database : database).addExpense(expense);
+
+      // insérer la dépense créée dans la base de données
+      await ExpenseRepository(database: database).addExpense(expense);
     }
   }
 }
